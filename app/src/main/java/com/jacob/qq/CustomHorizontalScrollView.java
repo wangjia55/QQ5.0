@@ -11,6 +11,8 @@ import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
+import com.nineoldandroids.view.ViewHelper;
+
 /**
  * Package : com.jacob.qq
  * Author : jacob
@@ -23,6 +25,9 @@ public class CustomHorizontalScrollView extends HorizontalScrollView {
     private int halfMenuWidth = 0;
     private boolean isOpen = false;
     private int menuPadding = dpToPx(80);
+
+    private ViewGroup menu;
+    private ViewGroup content;
 
 
     public CustomHorizontalScrollView(Context context) {
@@ -47,8 +52,8 @@ public class CustomHorizontalScrollView extends HorizontalScrollView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         LinearLayout linearLayout = (LinearLayout) getChildAt(0);
-        ViewGroup menu = (ViewGroup) linearLayout.getChildAt(0);
-        ViewGroup content = (ViewGroup) linearLayout.getChildAt(1);
+        menu = (ViewGroup) linearLayout.getChildAt(0);
+        content = (ViewGroup) linearLayout.getChildAt(1);
         menu.getLayoutParams().width = menuWidth;
         content.getLayoutParams().width = screenWidth;
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -78,6 +83,28 @@ public class CustomHorizontalScrollView extends HorizontalScrollView {
                 return true;
         }
         return super.onTouchEvent(ev);
+    }
+
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        float scale = l * 1.0f / menuWidth;
+        Log.e("TAG", "l:" + l + "**" + scale);
+//        ViewHelper.setTranslationX(menu, menuWidth * scale);
+
+        float rightScale = 0.8f + scale * 0.2f;
+        ViewHelper.setScaleX(content, rightScale);
+        ViewHelper.setScaleY(content, rightScale);
+        ViewHelper.setPivotX(content,0);
+        ViewHelper.setPivotY(content,getMeasuredHeight()/2);
+
+        float leftScale = 1 - 0.3f * scale;
+        ViewHelper.setScaleX(menu,leftScale);
+        ViewHelper.setScaleY(menu,leftScale);
+        ViewHelper.setAlpha(menu,leftScale);
+        ViewHelper.setTranslationX(menu,menuWidth*scale*0.6f);
+
 
     }
 
